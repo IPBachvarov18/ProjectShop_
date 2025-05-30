@@ -20,7 +20,7 @@ public class Main {
         Product prod1 = new Product("ime", BigDecimal.valueOf(20), date, ProductCategory.FOOD);
 
         System.out.println(prod1.getDeliveryPrice());
-        System.out.println(prod1.getTotalPrice(req));
+        //System.out.println(prod1.getTotalPrice(req,prod1));
 
 
         Store store = new Store("d",req);

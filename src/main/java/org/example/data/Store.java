@@ -13,6 +13,7 @@ public class Store {
     private StoreRequirements requirements;
     private Map<UUID, Integer> productQuantity;
     private static Set<Product> productsList = new HashSet<>();
+    private WorkTime workTime;
 
     public Map<UUID, Integer> getProductQuantity() {
         return productQuantity;
@@ -81,34 +82,34 @@ public class Store {
         cashDesk.assignCashierOnCashDesk(cashier);
     }
 
-    public void placeOrder(CashDesk cashDesk, HashMap<UUID, Integer> productList, BigDecimal avaiableCash) {
-        if (!this.cashDesks.contains(cashDesk) && cashDesk.getCashier() == null) {
-            System.out.println("Throw exception");
-            return;
-        }
-
-        boolean enoughQunatity = productList.entrySet().stream().allMatch((e) ->
-                e.getValue() <= this.productQuantity.get(e.getKey())
-        );
-        if (!enoughQunatity) {
-            System.out.println("Throw exception");
-            return;
-        }
-        productList.entrySet().stream().
-                map((e) -> {
-                    UUID id = e.getKey();
-                    Product pr = productsList.stream().filter((p) -> p.getId() == id)
-                            .findFirst()
-                            .orElseThrow();
-                    BigDecimal sum = pr.getTotalPrice(requirements);
-                    int qunatity = e.getValue();
-
-                    BigDecimal total = sum.multiply(new BigDecimal(qunatity));
-                    return total;
-
-                }).reduce(BigDecimal.ZERO, BigDecimal::add);
-
-
-    }
+//    public void placeOrder(CashDesk cashDesk, HashMap<UUID, Integer> productList, BigDecimal avaiableCash) {
+//        if (!this.cashDesks.contains(cashDesk) && cashDesk.getCashier() == null) {
+//            System.out.println("Throw exception");
+//            return;
+//        }
+//
+//        boolean enoughQunatity = productList.entrySet().stream().allMatch((e) ->
+//                e.getValue() <= this.productQuantity.get(e.getKey())
+//        );
+//        if (!enoughQunatity) {
+//            System.out.println("Throw exception");
+//            return;
+//        }
+//        productList.entrySet().stream().
+//                map((e) -> {
+//                    UUID id = e.getKey();
+//                    Product pr = productsList.stream().filter((p) -> p.getId() == id)
+//                            .findFirst()
+//                            .orElseThrow();
+//                    BigDecimal sum = pr.getTotalPrice(requirements);
+//                    int qunatity = e.getValue();
+//
+//                    BigDecimal total = sum.multiply(new BigDecimal(qunatity));
+//                    return total;
+//
+//                }).reduce(BigDecimal.ZERO, BigDecimal::add);
+//
+//
+//    }
 
 }

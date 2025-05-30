@@ -8,7 +8,7 @@ import java.util.UUID;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 
-public class Product implements Salable {
+public class Product   {
     private final UUID id;
     private String name;
     private BigDecimal deliveryPrice;
@@ -52,27 +52,7 @@ public class Product implements Salable {
         this.expireDate = expireDate;
     }
 
-    private BigDecimal getMarkupPrice(Map<ProductCategory, Integer> map) {
-        return deliveryPrice.add(deliveryPrice.multiply(new BigDecimal(map.get(category)).divide(BigDecimal.valueOf(100))));
-
+    public ProductCategory getCategory() {
+        return category;
     }
-    @Override
-    public BigDecimal getTotalPrice(StoreRequirements requirements) {
-        BigDecimal markupPrice=getMarkupPrice(requirements.getCategoryMarkup());
-        LocalDate myObj = LocalDate.now();
-
-        if(myObj.until(expireDate, DAYS)<requirements.getDaysUntilExpireDiscount()) {
-            return markupPrice.subtract(markupPrice.multiply(new BigDecimal(requirements.getExpireDiscountPercentage())
-                    .divide(BigDecimal.valueOf(100))));
-        }
-        return markupPrice;
-
-    }
-    public boolean isExpired() {
-        if(expireDate.isBefore(LocalDate.now())) {
-            return true;
-        }
-        return false;
-    }
-
 }

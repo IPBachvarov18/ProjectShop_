@@ -8,6 +8,7 @@ public class Cashier {
     private BigDecimal salary;
     private final UUID id;
     private CashDesk cashDesk;
+    private WorkTime workTime;
 
     public Cashier(String name, BigDecimal salary) {
         this.id = UUID.randomUUID();
@@ -34,15 +35,15 @@ public class Cashier {
     public UUID getId() {
         return id;
     }
+
     public CashDesk getCashDesk() {
         return cashDesk;
     }
 
     void assignCashDeskOnCashier(CashDesk cashDesk) {
-        this.cashDesk=cashDesk;
+        this.cashDesk = cashDesk;
 
     }
-
 
 
 }
