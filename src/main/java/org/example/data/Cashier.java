@@ -41,9 +41,18 @@ public class Cashier {
     }
 
     void assignCashDeskOnCashier(CashDesk cashDesk) {
+        if(cashDesk.getCashier()!=null) {
+            throw (new IllegalStateException("cashier already assigned"));
+        }
         this.cashDesk = cashDesk;
 
     }
 
+    public WorkTime getWorkTime() {
+        return workTime;
+    }
 
+    public void setWorkTime(WorkTime workTime) {
+        this.workTime = workTime;
+    }
 }

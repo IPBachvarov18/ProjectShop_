@@ -2,20 +2,37 @@ package org.example.data;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Store {
 
     private UUID id;
+
+    public BigDecimal getTotalIncome() {
+        return totalIncome;
+    }
+
+    public void setTotalIncome(BigDecimal totalIncome) {
+        this.totalIncome = totalIncome;
+    }
+
+    public BigDecimal getTotalProfit() {
+        return totalProfit;
+    }
+
+    public void setTotalProfit(BigDecimal totalProfit) {
+        this.totalProfit = totalProfit;
+    }
+
     private String name;
     private Set<Cashier> cashiers;
     private Set<CashDesk> cashDesks;
     private StoreRequirements requirements;
-    private Map<UUID, Integer> productQuantity;
-    private static Set<Product> productsList = new HashSet<>();
+    private Map<UUID, Quantity> productQuantity;
     private WorkTime workTime;
+    private BigDecimal totalIncome;
+    private BigDecimal totalProfit;
 
-    public Map<UUID, Integer> getProductQuantity() {
+    public Map<UUID, Quantity> getProductQuantity() {
         return productQuantity;
     }
 
@@ -28,88 +45,82 @@ public class Store {
         this.productQuantity = new HashMap<>();
     }
 
-    static public void addProductToList(Product product) {
-        if (!productsList.add(product)) {
-            System.out.println("Throw something");
-        }
-
+    public WorkTime getWorkTime() {
+        return workTime;
     }
 
-    public void addProductToStore(Product product, int quantity) {
-        if (!productsList.contains(product)) {
-            System.out.println("Throw something");
+    public void setWorkTime(WorkTime workTime) {
+        this.workTime = workTime;
+    }
+
+    public void setProductQuantity(Map<UUID, Quantity> productQuantity) {
+        this.productQuantity = productQuantity;
+    }
+
+    public StoreRequirements getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(StoreRequirements requirements) {
+        this.requirements = requirements;
+    }
+
+    public Set<CashDesk> getCashDesks() {
+        return cashDesks;
+    }
+
+    public void setCashDesks(Set<CashDesk> cashDesks) {
+        this.cashDesks = cashDesks;
+    }
+
+    public Set<Cashier> getCashiers() {
+        return cashiers;
+    }
+
+    public void setCashiers(Set<Cashier> cashiers) {
+        this.cashiers = cashiers;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void addCashDesk(CashDesk cashDesk) {
+        this.cashDesks.add(cashDesk);
+    }
+
+    public void addCashier(Cashier cashier) {
+        this.cashiers.add(cashier);
+    }
+
+    public void addProduct(Product product, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
         }
         if (!productQuantity.containsKey(product.getId())) {
-            productQuantity.put(product.getId(), quantity);
+            productQuantity.put(product.getId(), new Quantity(quantity, 0));
         } else {
-            productQuantity.compute(product.getId(), (k, v) -> productQuantity.get(k) + quantity);
-        }
-
-    }
-
-
-    public void hireCashier(Cashier cashier) {
-        if (!this.cashiers.add(cashier)) {
-            System.out.println("Throw exception");
+            productQuantity.compute(product.getId(), (k, v) -> {
+                v.setAvaibleQunatity(v.getAvaibleQunatity() + quantity);
+                 return v;
+            });
         }
     }
 
-    public void makeCashDesk(CashDesk cashDesk) {
-        if (!this.cashDesks.add(cashDesk)) {
-            System.out.println("Throw exception");
+    void reduceProductQuantity(UUID productId, int quantity) {
+        if (productQuantity.get(productId).getAvaibleQunatity() <= quantity) {
+            productQuantity.compute(productId, (k, v) -> {
+                v.setAvaibleQunatity(v.getAvaibleQunatity() - quantity);
+                v.setSoldQunatity(v.getSoldQunatity() + quantity);
+                return v;
+            });
+        } else {
+            throw new IllegalArgumentException("Not enough product quantity");
         }
-
     }
-
-
-    public void assignCashierToCashDesk(UUID cashDeskId, UUID cashierId) {
-
-
-        Cashier cashier = cashiers.stream().filter(c -> c.getId() == cashierId)
-                .findFirst()
-                .orElseThrow();
-
-        CashDesk cashDesk = cashDesks.stream().filter(c -> c.getId() == cashDeskId)
-                .findFirst()
-                .orElseThrow();
-
-        if (cashier.getCashDesk() != null || cashDesk.getCashier() != null) {
-            System.out.println("Throw exception");
-            return;
-        }
-
-        cashier.assignCashDeskOnCashier(cashDesk);
-        cashDesk.assignCashierOnCashDesk(cashier);
-    }
-
-//    public void placeOrder(CashDesk cashDesk, HashMap<UUID, Integer> productList, BigDecimal avaiableCash) {
-//        if (!this.cashDesks.contains(cashDesk) && cashDesk.getCashier() == null) {
-//            System.out.println("Throw exception");
-//            return;
-//        }
-//
-//        boolean enoughQunatity = productList.entrySet().stream().allMatch((e) ->
-//                e.getValue() <= this.productQuantity.get(e.getKey())
-//        );
-//        if (!enoughQunatity) {
-//            System.out.println("Throw exception");
-//            return;
-//        }
-//        productList.entrySet().stream().
-//                map((e) -> {
-//                    UUID id = e.getKey();
-//                    Product pr = productsList.stream().filter((p) -> p.getId() == id)
-//                            .findFirst()
-//                            .orElseThrow();
-//                    BigDecimal sum = pr.getTotalPrice(requirements);
-//                    int qunatity = e.getValue();
-//
-//                    BigDecimal total = sum.multiply(new BigDecimal(qunatity));
-//                    return total;
-//
-//                }).reduce(BigDecimal.ZERO, BigDecimal::add);
-//
-//
-//    }
 
 }

@@ -12,7 +12,7 @@ public interface StoreService {
 
     void makeCashDesk(Store store, CashDesk cashDesk);
 
-    void assignCashierToCashDesk(Store store, UUID cashDeskId, UUID cashierId);
+    void assignCashierToCashDesk(Store store, UUID cashDeskId, Cashier cashier);
 
     void placeOrder(CashDesk cashDesk, ClientData clientData);
 
@@ -25,4 +25,6 @@ public interface StoreService {
     BigDecimal getProfit(Store store);
 
     void getReceipt(Store store, int id);
+
+
 }

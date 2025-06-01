@@ -1,4 +1,170 @@
 package org.example.data;
 
-public class StoreServiceImpl {
+import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.util.UUID;
+
+public class StoreServiceImpl implements StoreService {
+    ProductCatalog productCatalog;
+    ProductService productService;
+
+    public StoreServiceImpl(ProductCatalog productCatalog, ProductService productService) {
+        this.productCatalog = productCatalog;
+        this.productService = productService;
+
+    }
+
+    public void addProductToStore(Store store, Product product, int quantity) {
+        if (productCatalog.getProductById(product.getId()) == null) {
+            throw (new RuntimeException("Product with id " + product.getId() + " does not exist"));
+        } else {
+            store.addProduct(product, quantity);
+        }
+    }
+
+    @Override
+    public void hireCashier(Store store, Cashier cashier) {
+
+    }
+
+    @Override
+    public void makeCashDesk(Store store, CashDesk cashDesk) {
+
+    }
+
+    @Override
+    public void assignCashierToCashDesk(Store store, UUID cashDeskId, Cashier cashier) {
+
+    }
+
+    @Override
+    public void placeOrder(CashDesk cashDesk, ClientData clientData) {
+
+    }
+
+    void hireCashier(Cashier cashier, Store store) {
+        if (store.getCashiers().contains(cashier)) {
+            throw (new RuntimeException("Cashier already exists"));
+        } else {
+            store.addCashier(cashier);
+        }
+    }
+
+    void makeCashDesk(CashDesk cashDesk, Store store) {
+        if (store.getCashDesks().contains(cashDesk)) {
+            throw (new RuntimeException("CashDesk already exists"));
+        } else {
+            store.addCashDesk(cashDesk);
+        }
+    }
+
+    void assignCashierToCashDesk(CashDesk cashDesk, Store store, Cashier cashier) {
+
+        LocalTime timeNow = LocalTime.now();
+        if (timeNow.isBefore(cashier.getWorkTime().endTime) && timeNow.isAfter(cashier.getWorkTime().startTime)) {
+            cashDesk.assignCashierOnCashDesk(cashier);
+            cashier.assignCashDeskOnCashier(cashDesk);
+        } else {
+            throw (new RuntimeException("Cashier out of work time"));
+        }
+
+
+    }
+
+    void placeOrder(CashDesk cashDesk, ClientData clientData, Store store) {
+        // da napravi belejka
+
+
+        BigDecimal sum = clientData.productList.entrySet().stream().
+                map((e) -> {
+                    UUID id = e.getKey();
+                    Product pr = productCatalog.getAllProducts().stream().filter((p) -> p.getId() == id)
+                            .findFirst()
+                            .orElseThrow();
+                    BigDecimal sum1 = productService.getTotalPrice(store.getRequirements(), pr);
+                    int qunatity = e.getValue();
+
+                    BigDecimal total = sum1.multiply(new BigDecimal(qunatity));
+                    return total;
+
+                }).reduce(BigDecimal.ZERO, BigDecimal::add);
+        sum = sum.multiply(BigDecimal.valueOf(store.getRequirements().getCardTypeDiscount()
+                .get(clientData.card)).divide(BigDecimal.valueOf(100)));
+
+        if (sum.compareTo(clientData.avaiableCash) != 1) {
+            clientData.productList.entrySet().stream()
+                    .forEach(entry -> {
+                        UUID key = entry.getKey();
+                        Integer value = entry.getValue();
+                        System.out.println("Ключ: " + key + ", Стойност: " + value);
+                        store.reduceProductQuantity(key, value);
+                    });
+
+            store.setTotalIncome(sum);
+        }
+
+    }
+
+    // pravim belejka
+    public BigDecimal getPayroll(Store store) {
+        BigDecimal payroll = BigDecimal.ZERO;
+        store.getCashiers().forEach(cashier -> {
+            payroll.add(cashier.getSalary());
+        });
+
+        return payroll;
+    }
+
+    public BigDecimal getGoodsDeliveryExpense(Store store) {
+        return store.getProductQuantity().entrySet().stream().
+                map((e) -> {
+                    UUID id = e.getKey();
+                    Product pr = productCatalog.getAllProducts().stream().filter((p) -> p.getId() == id)
+                            .findFirst()
+                            .orElseThrow();
+                    BigDecimal deliveryPrice = pr.getDeliveryPrice();
+                    int qunatity = e.getValue().getAvaibleQunatity()+e.getValue().getSoldQunatity();
+
+                    BigDecimal total = deliveryPrice.multiply(new BigDecimal(qunatity));
+                    return total;
+
+                }).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
+    }
+
+    @Override
+    public BigDecimal getGoodsDeliveryIncome(Store store) {
+        return null;
+    }
+
+//    public BigDecimal getGoodsDeliveryIncome(Store store) {
+//
+//        return store.getProductQuantity().entrySet().stream().
+//                map((e) -> {
+//                    UUID id = e.getKey();
+//                    Product pr = productCatalog.getAllProducts().stream().filter((p) -> p.getId() == id)
+//                            .findFirst()
+//                            .orElseThrow();
+//                    BigDecimal income = pr;
+//                    int qunatity = e.getValue();
+//
+//                    BigDecimal total = deliveryPrice.multiply(new BigDecimal(qunatity));
+//                    return total;
+//
+//                }).reduce(BigDecimal.ZERO, BigDecimal::add);
+//    }
+
+    @Override
+    public BigDecimal getProfit(Store store) {
+        return null;
+    }
+
+    @Override
+    public void getReceipt(Store store, int id) {
+
+    }
 }
+
+
+

@@ -1,6 +1,12 @@
 package org.example.data;
 
-public interface ReceiptService {
+import java.io.IOException;
 
+public interface ReceiptService {
+    void generateReceipt(Receipt receipt) throws IOException, ClassNotFoundException;
+
+    Receipt readReceipt();
+
+    int getReceiptCount() throws ClassNotFoundException, IOException;
 
 }

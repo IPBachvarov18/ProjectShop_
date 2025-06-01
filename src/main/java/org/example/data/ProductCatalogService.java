@@ -5,12 +5,12 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface ProductCatalogService {
-    void addProduct(ProductCatalog catalog,Product product);
+    void addProduct(Product product);
 
-    void deleteProduct(ProductCatalog catalog,Product product);
+    void deleteProduct(Product product);
 
-    Set<Product> getAllProducts(ProductCatalog catalog);
+    Set<Product> getAllProducts();
 
-    Product getProductById(ProductCatalog catalog, UUID id);
+    Product getProductById(UUID id);
 }
 
