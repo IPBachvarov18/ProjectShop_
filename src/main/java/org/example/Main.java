@@ -56,8 +56,8 @@ public class Main {
 
             CashDesk cashDesk1 = new CashDesk(1);
             CashDesk cashDesk2 = new CashDesk(2);
-            Cashier cashier1 = new Cashier("Gosho", BigDecimal.valueOf(500));
-            Cashier cashier2 = new Cashier("BaiIvan", BigDecimal.valueOf(1500));
+            Cashier cashier1 = new Cashier("Gosho", "Gogev", "Petrov", BigDecimal.valueOf(500));
+            Cashier cashier2 = new Cashier("Preslava Gulgard Petreoba", BigDecimal.valueOf(1500));
 
             storeService.hireCashier(store1, cashier1);
             storeService.hireCashier(store1, cashier2);
@@ -76,6 +76,7 @@ public class Main {
 
             Map<Product, Integer> productQuantities = new HashMap<>();
             productQuantities.put(list.get(2), 2);
+            productQuantities.put(list.get(4), 3);
             Receipt receipt = null;
             try {
                 receipt = storeService.placeOrder(store1, cashDesk1, new ClientData(CardType.GOLD, BigDecimal.valueOf(50), productQuantities));
@@ -90,6 +91,30 @@ public class Main {
 
             System.out.println(storeInterface.getProductQuantitiesInfo(store1, catalog1));
             System.out.println(receiptService.getReceiptTxt(store1, receipt));
+
+            System.out.println(cashier1.getSalary());
+            System.out.println(cashier2.getSalary());
+
+            System.out.println(storeService.getPayroll(store1));
+
+            System.out.println(storeService.getGoodsDeliveryExpense(store1));
+            System.out.println(store1.getTotalIncome());
+            System.out.println(storeService.getGoodsDeliveryIncome(store1));
+
+            System.out.println(storeService.getProfit(store1));
+
+            try {
+                Receipt receipt22 = receiptService.getReceipt(store1, 12);
+                System.out.println(receiptService.getReceiptTxt(store1, receipt22));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+
+
+
         }
 
 

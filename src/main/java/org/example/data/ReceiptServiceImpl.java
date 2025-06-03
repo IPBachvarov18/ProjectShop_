@@ -26,7 +26,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     @Override
     public Receipt generateReceipt(ClientData clientData, Store store, CashDesk cashDesk) throws IOException, ClassNotFoundException {
         int order = this.getReceiptCount();
-        Receipt receipt = new Receipt(++order, cashDesk.getCashier(), LocalDateTime.now(), clientData.getProductList(), clientData.getTotal());
+        Receipt receipt = new Receipt(++order, cashDesk.getCashier(), LocalDateTime.now(), clientData.getProductList(), clientData.getTotal(),clientData.getTotalDiscount());
         String receiptFileName = "Receipt_" + order;
         receiptCountRepository.writeBin(order, receiptCountFileName);
         receiptRepository.writeBin(receipt, receiptFileName + ".bin");
@@ -50,7 +50,7 @@ public class ReceiptServiceImpl implements ReceiptService {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Receipt #").append(receipt.getId()).append("\n");
-        sb.append("Cashier: ").append(receipt.getCashier() != null ? receipt.getCashier().getName() : "Unknown").append("\n");
+        sb.append("Cashier: ").append(receipt.getCashier() != null ? receipt.getCashier().getFullName() : "Unknown").append("\n");
         sb.append("Date: ").append(receipt.getTime() != null ? receipt.getTime().toString() : "Unknown").append("\n");
         sb.append("-----------------------------------------------------------\n");
         sb.append(String.format("%-20s %10s %15s %15s\n", "Product", "Quantity", "Unit Price", "Total Price"));
@@ -74,8 +74,16 @@ public class ReceiptServiceImpl implements ReceiptService {
 
         sb.append("-----------------------------------------------------------\n");
         sb.append(String.format("%-45s %15.2f\n",
+                "Total discount:", receipt.getTotalDiscount() != null ? receipt.getTotalDiscount() : BigDecimal.ZERO));
+        sb.append(String.format("%-45s %15.2f\n",
                 "Total:", receipt.getTotal() != null ? receipt.getTotal() : BigDecimal.ZERO));
 
         return sb.toString();
     }
+
+    @Override
+    public Receipt getReceipt(Store store, int receiptId) throws IOException, ClassNotFoundException {
+        return (Receipt) receiptRepository.readBin("Receipt_" + receiptId + ".bin");
+    }
+
 }

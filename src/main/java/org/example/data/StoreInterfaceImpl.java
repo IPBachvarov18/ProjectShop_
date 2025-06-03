@@ -40,7 +40,7 @@ public class StoreInterfaceImpl implements StoreInterface {
         }
 
         for (Cashier cashier : cashiers) {
-            sb.append("Name: ").append(cashier.getName());
+            sb.append("Name: ").append(cashier.getFullName());
 
             CashDesk desk = cashier.getCashDesk();
             if (desk != null) {
@@ -77,7 +77,7 @@ public class StoreInterfaceImpl implements StoreInterface {
             sb.append("Cash Desk Number: ").append(desk.getNumber());
             Cashier cashier = desk.getCashier();
             if (cashier != null) {
-                sb.append(", Cashier: ").append(cashier.getName());
+                sb.append(", Cashier: ").append(cashier.getFullName());
             } else {
                 sb.append(", No cashier assigned");
             }
@@ -104,7 +104,7 @@ public class StoreInterfaceImpl implements StoreInterface {
             sb.append("Cash Desk Number: ").append(desk.getNumber());
             Cashier cashier = desk.getCashier();
             if (cashier != null) {
-                sb.append(", Cashier: ").append(cashier.getName());
+                sb.append(", Cashier: ").append(cashier.getFullName());
             } else {
                 sb.append(", No cashier assigned");
             }

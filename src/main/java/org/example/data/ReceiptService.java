@@ -11,4 +11,6 @@ public interface ReceiptService {
 
 
     String getReceiptTxt(Store store, Receipt receipt);
+
+    Receipt getReceipt(Store store, int receiptId) throws IOException, ClassNotFoundException;
 }

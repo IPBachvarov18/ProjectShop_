@@ -77,7 +77,9 @@ public class StoreServiceImpl implements StoreService {
 
                 }).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        clientData.setTotal(sum.multiply(BigDecimal.valueOf(store.getRequirements().getCardTypeDiscount()
+        clientData.setTotal(sum.subtract(sum.multiply(BigDecimal.valueOf(store.getRequirements().getCardTypeDiscount()
+                .get(clientData.getCard())).divide(BigDecimal.valueOf(100)))));
+        clientData.setTotalDiscount(sum.multiply(BigDecimal.valueOf(store.getRequirements().getCardTypeDiscount()
                 .get(clientData.getCard())).divide(BigDecimal.valueOf(100))));
 
         if (clientData.getTotal().compareTo(clientData.getAvaiableCash()) != 1) {
@@ -88,7 +90,7 @@ public class StoreServiceImpl implements StoreService {
                         store.reduceProductQuantity(key, value);
                     });
 
-            store.setTotalIncome(sum);
+            store.setTotalIncome(clientData.getTotal());
             return receiptService.generateReceipt(clientData, store, cashDesk);
         }
         return null;
@@ -124,14 +126,13 @@ public class StoreServiceImpl implements StoreService {
     }
 
     // pravim belejka
-    public BigDecimal getPayroll(Store store) {
-        BigDecimal payroll = BigDecimal.ZERO;
-        store.getCashiers().forEach(cashier -> {
-            payroll.add(cashier.getSalary());
-        });
-
-        return payroll;
-    }
+        public BigDecimal getPayroll(Store store) {
+            BigDecimal payroll = BigDecimal.ZERO;
+            for (Cashier cashier : store.getCashiers()) {
+                payroll = payroll.add(cashier.getSalary());
+            }
+            return payroll;
+        }
 
     public BigDecimal getGoodsDeliveryExpense(Store store) {
         return store.getProductQuantity().entrySet().stream().
@@ -150,7 +151,16 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public BigDecimal getGoodsDeliveryIncome(Store store) {
-        return null;
+        BigDecimal expenses= store.getProductQuantity().entrySet().stream().
+                map((e) -> {
+                    int totalQunatity = e.getValue().getSoldQunatity()+e.getValue().getAvaibleQunatity();
+                    BigDecimal deliveryPrice = e.getKey().getDeliveryPrice();
+
+                    BigDecimal total = deliveryPrice.multiply(new BigDecimal(totalQunatity));
+                    return total;
+
+                }).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return store.getTotalIncome().subtract(expenses);
     }
 
 //    public BigDecimal getGoodsDeliveryIncome(Store store) {
@@ -172,13 +182,12 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public BigDecimal getProfit(Store store) {
-        return null;
+        BigDecimal totalProfit=getGoodsDeliveryIncome(store);
+
+        return totalProfit.subtract(this.getPayroll(store));
     }
 
-    @Override
-    public void getReceipt(Store store, int id) {
 
-    }
 }
 
 

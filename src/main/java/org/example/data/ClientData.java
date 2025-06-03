@@ -8,8 +8,18 @@ import java.util.UUID;
 public class ClientData {
     private CardType card;
     private BigDecimal avaiableCash;
+
+    public BigDecimal getTotalDiscount() {
+        return totalDiscount;
+    }
+
+    public void setTotalDiscount(BigDecimal totalDiscount) {
+        this.totalDiscount = totalDiscount;
+    }
+
     private Map<Product, Integer> productList;
     private BigDecimal total;
+    private BigDecimal totalDiscount;
 
     public BigDecimal getTotal() {
         return total;

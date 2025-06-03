@@ -25,7 +25,6 @@ public interface StoreService {
 
     BigDecimal getProfit(Store store);
 
-    void getReceipt(Store store, int id);
 
 
 }
