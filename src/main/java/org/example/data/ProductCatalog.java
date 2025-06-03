@@ -23,6 +23,7 @@ public class ProductCatalog implements ProductCatalogService {
         productsList.add(product);
     }
 
+
     public void deleteProduct(Product product) {
         productsList.remove(product);
     }
@@ -31,4 +32,19 @@ public class ProductCatalog implements ProductCatalogService {
         return productsList.stream().filter(product -> product.getId().equals(id))
                 .findFirst().orElse(null);
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ProductCatalog:\n");
+        for (Product p : productsList) {
+            sb.append(" - ")
+                    .append(p.getName())
+                    .append(", Price: ").append(p.getDeliveryPrice())
+                    .append(", Expiry: ").append(p.getExpireDate())
+                    .append("\n");
+        }
+        return sb.toString();
+    }
 }
+
+

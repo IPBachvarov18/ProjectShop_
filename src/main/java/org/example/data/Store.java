@@ -6,23 +6,6 @@ import java.util.*;
 public class Store {
 
     private UUID id;
-
-    public BigDecimal getTotalIncome() {
-        return totalIncome;
-    }
-
-    public void setTotalIncome(BigDecimal totalIncome) {
-        this.totalIncome = totalIncome;
-    }
-
-    public BigDecimal getTotalProfit() {
-        return totalProfit;
-    }
-
-    public void setTotalProfit(BigDecimal totalProfit) {
-        this.totalProfit = totalProfit;
-    }
-
     private String name;
     private Set<Cashier> cashiers;
     private Set<CashDesk> cashDesks;
@@ -63,6 +46,22 @@ public class Store {
 
     public void setRequirements(StoreRequirements requirements) {
         this.requirements = requirements;
+    }
+
+    public BigDecimal getTotalIncome() {
+        return totalIncome;
+    }
+
+    public void setTotalIncome(BigDecimal totalIncome) {
+        this.totalIncome = totalIncome;
+    }
+
+    public BigDecimal getTotalProfit() {
+        return totalProfit;
+    }
+
+    public void setTotalProfit(BigDecimal totalProfit) {
+        this.totalProfit = totalProfit;
     }
 
     public Set<CashDesk> getCashDesks() {
@@ -106,13 +105,13 @@ public class Store {
         } else {
             productQuantity.compute(product.getId(), (k, v) -> {
                 v.setAvaibleQunatity(v.getAvaibleQunatity() + quantity);
-                 return v;
+                return v;
             });
         }
     }
 
     void reduceProductQuantity(UUID productId, int quantity) {
-        if (productQuantity.get(productId).getAvaibleQunatity() <= quantity) {
+        if (productQuantity.get(productId).getAvaibleQunatity() >= quantity) {
             productQuantity.compute(productId, (k, v) -> {
                 v.setAvaibleQunatity(v.getAvaibleQunatity() - quantity);
                 v.setSoldQunatity(v.getSoldQunatity() + quantity);
@@ -122,5 +121,6 @@ public class Store {
             throw new IllegalArgumentException("Not enough product quantity");
         }
     }
+
 
 }

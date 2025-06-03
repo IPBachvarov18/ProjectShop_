@@ -8,10 +8,11 @@ public class StoreRequirements {
     private Map<ProductCategory, Integer> categoryMarkup;
     private Map<CardType, Integer> cardTypeDiscount;
 
-    public StoreRequirements(int daysUntilExpireDiscount, int expireDiscountPercentage, Map<ProductCategory, Integer> categoryMarkup) {
+    public StoreRequirements(int daysUntilExpireDiscount, int expireDiscountPercentage, Map<ProductCategory, Integer> categoryMarkup, Map<CardType, Integer> cardTypeDiscount) {
         this.setCategoryMarkup(categoryMarkup);
         this.setDaysUntilExpireDiscount(daysUntilExpireDiscount);
         this.setExpireDiscountPercentage(expireDiscountPercentage);
+        this.cardTypeDiscount = cardTypeDiscount;
     }
 
     public int getDaysUntilExpireDiscount() {

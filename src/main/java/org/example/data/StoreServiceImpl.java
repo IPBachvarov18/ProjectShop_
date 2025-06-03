@@ -24,22 +24,73 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public void hireCashier(Store store, Cashier cashier) {
-
+        if (!store.getCashiers().contains(cashier)) {
+            store.addCashier(cashier);
+        }
+        else {
+            throw (new RuntimeException("Cashier already hired"));
+        }
     }
 
     @Override
     public void makeCashDesk(Store store, CashDesk cashDesk) {
+        if (!store.getCashDesks().contains(cashDesk)) {
+            store.addCashDesk(cashDesk);
+        }
+        else {
+            throw (new RuntimeException("CashDesk already made"));
+        }
+    }
+
+    @Override
+    public void assignCashierToCashDesk(Store store, UUID cashDeskId, UUID cashierId) {
+        Cashier cashier = store.getCashiers().stream().filter(c -> c.getId() == cashierId)
+                .findFirst()
+                .orElseThrow();
+
+        CashDesk cashDesk = store.getCashDesks().stream().filter(c -> c.getId() == cashDeskId)
+                .findFirst()
+                .orElseThrow();
+
+        if (cashier.getCashDesk() != null || cashDesk.getCashier() != null) {
+            System.out.println("Throw exception");
+            return;
+        }
+
+        cashier.assignCashDeskOnCashier(cashDesk);
+        cashDesk.assignCashierOnCashDesk(cashier);
 
     }
 
     @Override
-    public void assignCashierToCashDesk(Store store, UUID cashDeskId, Cashier cashier) {
+    public void placeOrder(Store store,CashDesk cashDesk, ClientData clientData) {
 
-    }
+        BigDecimal sum = clientData.getProductList().entrySet().stream().
+                map((e) -> {
+                    UUID id = e.getKey();
+                    Product pr = productCatalog.getAllProducts().stream().filter((p) -> p.getId() == id)
+                            .findFirst()
+                            .orElseThrow();
+                    BigDecimal sum1 = productService.getTotalPrice(store.getRequirements(), pr);
+                    int qunatity = e.getValue();
 
-    @Override
-    public void placeOrder(CashDesk cashDesk, ClientData clientData) {
+                    BigDecimal total = sum1.multiply(new BigDecimal(qunatity));
+                    return total;
 
+                }).reduce(BigDecimal.ZERO, BigDecimal::add);
+        sum = sum.multiply(BigDecimal.valueOf(store.getRequirements().getCardTypeDiscount()
+                .get(clientData.getCard())).divide(BigDecimal.valueOf(100)));
+
+        if (sum.compareTo(clientData.getAvaiableCash()) != 1) {
+            clientData.getProductList().entrySet().stream()
+                    .forEach(entry -> {
+                        UUID key = entry.getKey();
+                        Integer value = entry.getValue();
+                        store.reduceProductQuantity(key, value);
+                    });
+
+            store.setTotalIncome(sum);
+        }
     }
 
     void hireCashier(Cashier cashier, Store store) {
@@ -71,40 +122,6 @@ public class StoreServiceImpl implements StoreService {
 
     }
 
-    void placeOrder(CashDesk cashDesk, ClientData clientData, Store store) {
-        // da napravi belejka
-
-
-        BigDecimal sum = clientData.productList.entrySet().stream().
-                map((e) -> {
-                    UUID id = e.getKey();
-                    Product pr = productCatalog.getAllProducts().stream().filter((p) -> p.getId() == id)
-                            .findFirst()
-                            .orElseThrow();
-                    BigDecimal sum1 = productService.getTotalPrice(store.getRequirements(), pr);
-                    int qunatity = e.getValue();
-
-                    BigDecimal total = sum1.multiply(new BigDecimal(qunatity));
-                    return total;
-
-                }).reduce(BigDecimal.ZERO, BigDecimal::add);
-        sum = sum.multiply(BigDecimal.valueOf(store.getRequirements().getCardTypeDiscount()
-                .get(clientData.card)).divide(BigDecimal.valueOf(100)));
-
-        if (sum.compareTo(clientData.avaiableCash) != 1) {
-            clientData.productList.entrySet().stream()
-                    .forEach(entry -> {
-                        UUID key = entry.getKey();
-                        Integer value = entry.getValue();
-                        System.out.println("Ключ: " + key + ", Стойност: " + value);
-                        store.reduceProductQuantity(key, value);
-                    });
-
-            store.setTotalIncome(sum);
-        }
-
-    }
-
     // pravim belejka
     public BigDecimal getPayroll(Store store) {
         BigDecimal payroll = BigDecimal.ZERO;
@@ -123,7 +140,7 @@ public class StoreServiceImpl implements StoreService {
                             .findFirst()
                             .orElseThrow();
                     BigDecimal deliveryPrice = pr.getDeliveryPrice();
-                    int qunatity = e.getValue().getAvaibleQunatity()+e.getValue().getSoldQunatity();
+                    int qunatity = e.getValue().getAvaibleQunatity() + e.getValue().getSoldQunatity();
 
                     BigDecimal total = deliveryPrice.multiply(new BigDecimal(qunatity));
                     return total;

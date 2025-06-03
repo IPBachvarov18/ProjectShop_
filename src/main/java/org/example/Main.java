@@ -5,60 +5,71 @@ import org.example.data.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-//        LocalDate date = LocalDate.now();
-//        Map<ProductCategory, Integer> map = new HashMap<ProductCategory, Integer>();
-//        map.put(ProductCategory.FOOD, 10);
-//        map.put(ProductCategory.NON_FOOD, 20);
-//
-//        StoreRequirements req = new StoreRequirements(10, 20,map);
-//        Product prod1 = new Product("ime", BigDecimal.valueOf(20), date, ProductCategory.FOOD);
-//
-//        System.out.println(prod1.getDeliveryPrice());
-//        //System.out.println(prod1.getTotalPrice(req,prod1));
-//
-//
-//        Store store = new Store("d",req);
-//        Cashier cashier = new Cashier("d",BigDecimal.valueOf(1000));
-//        CashDesk cashDesk=new CashDesk(1);
-//
-//        System.out.println(store);
-////
-////        store.hireCashier(cashier);
-////        store.makeCashDesk(cashDesk);
-////
-//////        System.out.println(cashier.getCashDesk().getNumber());
-//////        System.out.println(cashDesk.getCashier().getName());
-////
-////        store.assignCashierToCashDesk(cashDesk.getId(),cashier.getId());
-//
-//        System.out.println(cashier.getCashDesk().getNumber());
-//        System.out.println(cashDesk.getCashier().getName());
-////
-//        Store.addProductToList(prod1);
-//        store.addProductToStore(prod1,10);
-//        store.addProductToStore(prod1,5);
-//        System.out.println(store.getProductQuantity());
+        Set<Product> products = new HashSet<>();
+
+        products.add(new Product("domati", BigDecimal.valueOf(4), LocalDate.of(2025, 6, 15), ProductCategory.FOOD));
+        products.add(new Product("krastavici", BigDecimal.valueOf(3), LocalDate.of(2025, 7, 10), ProductCategory.FOOD));
+        products.add(new Product("morkovi", BigDecimal.valueOf(2), LocalDate.of(2025, 8, 5), ProductCategory.FOOD));
+        products.add(new Product("bulgarche", BigDecimal.valueOf(5), LocalDate.of(2025, 9, 20), ProductCategory.FOOD));
+        products.add(new Product("sirene", BigDecimal.valueOf(8), LocalDate.of(2025, 10, 25), ProductCategory.FOOD));
+        products.add(new Product("maslo", BigDecimal.valueOf(6), LocalDate.of(2025, 11, 30), ProductCategory.FOOD));
+        products.add(new Product("kafe", BigDecimal.valueOf(10), LocalDate.of(2025, 12, 15), ProductCategory.NON_FOOD));
+        products.add(new Product("cay", BigDecimal.valueOf(7), LocalDate.of(2026, 1, 10), ProductCategory.NON_FOOD));
+        products.add(new Product("zelene", BigDecimal.valueOf(3), LocalDate.of(2026, 2, 5), ProductCategory.FOOD));
+        products.add(new Product("hrana_za_ku4eta", BigDecimal.valueOf(12), LocalDate.of(2026, 3, 1), ProductCategory.NON_FOOD));
+
+        ProductCatalog catalog1 = new ProductCatalog(products);
+
+        System.out.println(catalog1);
+        Map cardDiscounts = new HashMap<CardType, Integer>();
+        cardDiscounts.put(CardType.SILVER, 0.5);
+        cardDiscounts.put(CardType.GOLD, 1);
+
+        ProductService prodService = new ProductServiceImpl();
+        Map requ = new HashMap<ProductCategory, Integer>();
+        requ.put(ProductCategory.FOOD, 1);
+        requ.put(ProductCategory.NON_FOOD, 5);
+        Store store1 = new Store("Lidl", new StoreRequirements(15, 5, requ,cardDiscounts));
+        StoreService storeService = new StoreServiceImpl(catalog1, prodService);
+        StoreInterface storeInterface=new StoreInterfaceImpl();
+        List<Product> list = new ArrayList<>(products);
+        storeService.addProductToStore(store1, list.get(2), 5);
+        storeService.addProductToStore(store1, list.get(4), 5);
 
 
+        System.out.println(storeInterface.getProductQuantitiesInfo(store1,catalog1));
 
-        try {
-            ReceiptService service = new ReceiptServiceImpl();
-            var r = new Receipt();
-            r.setId(1);
-            r.setTotal(new BigDecimal("1010.00"));
-            service.generateReceipt(r);
-        } catch (IOException e) {
-            System.out.printf("Error generating receipt: %s\n", e.toString());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        CashDesk cashDesk1=new CashDesk(1);
+        CashDesk cashDesk2=new CashDesk(2);
+        Cashier cashier1=new Cashier("Gosho",BigDecimal.valueOf(500));
+        Cashier cashier2=new Cashier("BaiIvan",BigDecimal.valueOf(1500));
+
+        storeService.hireCashier(store1, cashier1);
+        storeService.hireCashier(store1, cashier2);
+
+        storeService.makeCashDesk(store1, cashDesk1);
+        storeService.makeCashDesk(store1, cashDesk2);
+
+        storeService.assignCashierToCashDesk(store1,cashDesk1.getId(),cashier2.getId());
+        storeService.assignCashierToCashDesk(store1,cashDesk2.getId(),cashier1.getId());
+
+        System.out.println(storeInterface.getStoreCashiers(store1));
+
+        System.out.println(storeInterface.getStoreCashDesks(store1));
+
+        System.out.println(storeInterface.getCashierWorkingAtCashDesk(store1));
+
+        Map<UUID, Integer> productQuantities = new HashMap<>();
+        productQuantities.put(list.get(2).getId(), 2);
+        storeService.placeOrder(store1,cashDesk1,new ClientData(CardType.GOLD,BigDecimal.valueOf(50), productQuantities));
+
+        System.out.println(storeInterface.getProductQuantitiesInfo(store1,catalog1));
 
 
     }

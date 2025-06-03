@@ -12,9 +12,9 @@ public interface StoreService {
 
     void makeCashDesk(Store store, CashDesk cashDesk);
 
-    void assignCashierToCashDesk(Store store, UUID cashDeskId, Cashier cashier);
+    void assignCashierToCashDesk(Store store, UUID cashDeskId, UUID cashierId);
 
-    void placeOrder(CashDesk cashDesk, ClientData clientData);
+    void placeOrder(Store store, CashDesk cashDesk, ClientData clientData);
 
     BigDecimal getPayroll(Store store);
 

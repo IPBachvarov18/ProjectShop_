@@ -29,7 +29,7 @@ public class CashDesk {
     }
 
     void assignCashierOnCashDesk(Cashier cashier) {
-        if (cashier.getCashDesk()!=null) {
+        if (this.cashier!=null) {
             throw (new IllegalStateException("Cash desk already assigned"));
         }
         this.cashier = cashier;
