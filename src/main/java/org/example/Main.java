@@ -1,42 +1,53 @@
 package org.example;
 
+import jdk.jfr.Category;
 import org.example.data.*;
+import org.example.utils.table.TableRenderer;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
+//      --------------------------------------------------------------
         Set<Product> products = new HashSet<>();
+        products.add(new Product("Чушки", BigDecimal.valueOf(4), LocalDate.of(2025, 6, 15), ProductCategory.FOOD));
+        products.add(new Product("Краставици", BigDecimal.valueOf(3), LocalDate.of(2025, 7, 10), ProductCategory.FOOD));
+        products.add(new Product("Моркови", BigDecimal.valueOf(2), LocalDate.of(2025, 8, 5), ProductCategory.FOOD));
+        products.add(new Product("Сирене", BigDecimal.valueOf(8), LocalDate.of(2025, 10, 25), ProductCategory.FOOD));
+        products.add(new Product("Масло", BigDecimal.valueOf(6), LocalDate.of(2025, 11, 30), ProductCategory.FOOD));
+        products.add(new Product("Кафе", BigDecimal.valueOf(10), LocalDate.of(2025, 12, 15), ProductCategory.FOOD));
+        products.add(new Product("Боя латекс", BigDecimal.valueOf(35), LocalDate.of(2028, 12, 31), ProductCategory.NON_FOOD));
+        products.add(new Product("Тръба PVC", BigDecimal.valueOf(12), LocalDate.of(2030, 1, 1), ProductCategory.NON_FOOD));
+        products.add(new Product("Винтове 50 бр.", BigDecimal.valueOf(5), LocalDate.of(2030, 1, 1), ProductCategory.NON_FOOD));
+        products.add(new Product("Градински маркуч", BigDecimal.valueOf(20), LocalDate.of(2027, 5, 10), ProductCategory.NON_FOOD));
+        products.add(new Product("Фенер акумулаторен", BigDecimal.valueOf(45), LocalDate.of(2029, 12, 31), ProductCategory.NON_FOOD));
+        products.add(new Product("Лепило универсално", BigDecimal.valueOf(7), LocalDate.of(2028, 8, 20), ProductCategory.NON_FOOD));
+        List<Product> list = new ArrayList<>(products);
 
-        products.add(new Product("domati", BigDecimal.valueOf(4), LocalDate.of(2025, 6, 15), ProductCategory.FOOD));
-        products.add(new Product("krastavici", BigDecimal.valueOf(3), LocalDate.of(2025, 7, 10), ProductCategory.FOOD));
-        products.add(new Product("morkovi", BigDecimal.valueOf(2), LocalDate.of(2025, 8, 5), ProductCategory.FOOD));
-        products.add(new Product("bulgarche", BigDecimal.valueOf(5), LocalDate.of(2025, 9, 20), ProductCategory.FOOD));
-        products.add(new Product("sirene", BigDecimal.valueOf(8), LocalDate.of(2025, 10, 25), ProductCategory.FOOD));
-        products.add(new Product("maslo", BigDecimal.valueOf(6), LocalDate.of(2025, 11, 30), ProductCategory.FOOD));
-        products.add(new Product("kafe", BigDecimal.valueOf(10), LocalDate.of(2025, 12, 15), ProductCategory.NON_FOOD));
-        products.add(new Product("cay", BigDecimal.valueOf(7), LocalDate.of(2026, 1, 10), ProductCategory.NON_FOOD));
-        products.add(new Product("zelene", BigDecimal.valueOf(3), LocalDate.of(2026, 2, 5), ProductCategory.FOOD));
-        products.add(new Product("hrana_za_ku4eta", BigDecimal.valueOf(12), LocalDate.of(2026, 3, 1), ProductCategory.NON_FOOD));
+        String asciiTable = TableRenderer.renderAsAsciiTable(list);
+        System.out.println(asciiTable);
 
-        ProductCatalog catalog1 = new ProductCatalog(products);
+        ProductCatalog productCatalog = new ProductCatalog(products);
+        ProductCatalogInterface productCatalogInterface = new ProductCatalogInterface(productCatalog);
 
-        System.out.println(catalog1);
-        Map cardDiscounts = new HashMap<CardType, Integer>();
-        cardDiscounts.put(CardType.SILVER, 0.5);
-        cardDiscounts.put(CardType.GOLD, 1);
+        System.out.println("\n\nКаталог със всички налични продукти, налични за доставка към различните магазини:");
+        productCatalogInterface.displayAllItems();
+//      --------------------------------------------------------------
+
+        Map<CardType, Integer> cardDiscounts = new HashMap<CardType, Integer>();
+        cardDiscounts.put(CardType.SILVER, 1);
+        cardDiscounts.put(CardType.GOLD, 2);
 
         ProductService prodService = new ProductServiceImpl();
-        Map requ = new HashMap<ProductCategory, Integer>();
-        requ.put(ProductCategory.FOOD, 1);
-        requ.put(ProductCategory.NON_FOOD, 5);
-        ReceiptService receiptService = null;
+        Map<ProductCategory, Integer> categoryMarkup = new HashMap<ProductCategory, Integer>();
+        categoryMarkup.put(ProductCategory.FOOD, 10);
+        categoryMarkup.put(ProductCategory.NON_FOOD, 15);
+//      --------------------------------------------------------------
 
+        ReceiptService receiptService = null;
         try {
             receiptService = new ReceiptServiceImpl(prodService);
         } catch (Exception e) {
@@ -44,15 +55,25 @@ public class Main {
         }
 
         if (receiptService != null) {
-            Store store1 = new Store("Lidl", new StoreRequirements(15, 5, requ, cardDiscounts));
-            StoreService storeService = new StoreServiceImpl(catalog1, prodService, receiptService);
+
+            Store store1 = new Store("Lidl", new StoreRequirements(15, 10, categoryMarkup, cardDiscounts));
+            Store store2 = new Store("Galenflaund", new StoreRequirements(10, 20, categoryMarkup, cardDiscounts));
+
+            StoreService storeService = new StoreServiceImpl(productCatalog, prodService, receiptService);
             StoreInterface storeInterface = new StoreInterfaceImpl();
-            List<Product> list = new ArrayList<>(products);
-            storeService.addProductToStore(store1, list.get(2), 5);
-            storeService.addProductToStore(store1, list.get(4), 5);
+
+            storeService.addProductToStore(store1, list.get(1), 12);
+            storeService.addProductToStore(store1, list.get(2), 33);
+            storeService.addProductToStore(store1, list.get(7), 2);
+            storeService.addProductToStore(store1, list.get(8), 34);
+
+            storeService.addProductToStore(store2, list.get(1), 12);
+            storeService.addProductToStore(store2, list.get(10), 8);
+            storeService.addProductToStore(store2, list.get(6), 43);
+            storeService.addProductToStore(store2, list.get(5), 19);
 
 
-            System.out.println(storeInterface.getProductQuantitiesInfo(store1, catalog1));
+            System.out.println(storeInterface.getProductQuantitiesInfo(store2, productCatalog));
 
             CashDesk cashDesk1 = new CashDesk(1);
             CashDesk cashDesk2 = new CashDesk(2);
@@ -89,7 +110,7 @@ public class Main {
 
 
 
-            System.out.println(storeInterface.getProductQuantitiesInfo(store1, catalog1));
+            System.out.println(storeInterface.getProductQuantitiesInfo(store1, productCatalog));
             System.out.println(receiptService.getReceiptTxt(store1, receipt));
 
             System.out.println(cashier1.getSalary());
@@ -104,7 +125,7 @@ public class Main {
             System.out.println(storeService.getProfit(store1));
 
             try {
-                Receipt receipt22 = receiptService.getReceipt(store1, 12);
+                Receipt receipt22 = receiptService.getReceipt(store1, 1);
                 System.out.println(receiptService.getReceiptTxt(store1, receipt22));
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -1,6 +1,6 @@
 package org.example.data;
 
-import java.util.UUID;
+import java.util.List;
 
 public interface StoreInterface {
     String getProductQuantitiesInfo(Store store,ProductCatalogService catalog);
@@ -10,5 +10,9 @@ public interface StoreInterface {
     String getStoreCashDesks(Store store);
 
     String getCashierWorkingAtCashDesk(Store store);
+
+    void displayStores(List<Store> stores);
+
+    void displayStore(Store store);
 
 }

@@ -1,5 +1,6 @@
 package org.example.data;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -114,6 +115,15 @@ public class StoreInterfaceImpl implements StoreInterface {
         return sb.toString();
     }
 
+    @Override
+    public void displayStores(List<Store> stores) {
+
+    }
+
+    @Override
+    public void displayStore(Store store) {
+
+    }
 
 
 }

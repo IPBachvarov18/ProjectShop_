@@ -37,7 +37,7 @@ public class Cashier implements Serializable {
             } else if (splittedName.length == 3) {
                 setFirstName(splittedName[0]);
                 setMidName(splittedName[1]);
-                setLastName(splittedName[1]);
+                setLastName(splittedName[2]);
             }
         }else{
             throw new IllegalArgumentException("Invalid full name: " + fullName);

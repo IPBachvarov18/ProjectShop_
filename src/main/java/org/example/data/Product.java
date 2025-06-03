@@ -1,5 +1,7 @@
 package org.example.data;
 
+import org.example.utils.table.TableColumn;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,6 +13,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Product implements Serializable {
     private final UUID id;
+    @TableColumn(header = "Име на продукт", order = 1, width = 25)
     private String name;
     private BigDecimal deliveryPrice;
     private LocalDate expireDate;
