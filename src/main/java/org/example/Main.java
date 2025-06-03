@@ -8,6 +8,7 @@ import org.example.services.ProductCatalog;
 import org.example.services.ProductServiceImpl;
 import org.example.services.ReceiptServiceImpl;
 import org.example.views.AllStoresView;
+import org.example.views.OrderProductView;
 import org.example.views.ProductCatalogInterface;
 import org.example.views.StoreInterfaceImpl;
 import org.example.services.StoreServiceImpl;
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -64,8 +66,8 @@ public class Main {
         if (receiptService != null) {
             Store store1 = new Store("Lidl", new StoreRequirements(15, 10, categoryMarkup, cardDiscounts));
             Store store2 = new Store("Galenflaund", new StoreRequirements(10, 20, categoryMarkup, cardDiscounts));
-            store1.setWorkTime(new WorkTime(LocalTime.of(8,0), LocalTime.of(16,0)));
-            store2.setWorkTime(new WorkTime(LocalTime.of(18,0), LocalTime.of(3,0)));
+            store1.setWorkTime(new WorkTime(LocalTime.of(8, 0), LocalTime.of(16, 0)));
+            store2.setWorkTime(new WorkTime(LocalTime.of(18, 0), LocalTime.of(3, 0)));
 
             System.out.println("Списък с всички магазини: ");
             List<AllStoresView> allStoresView = List.of(
@@ -80,7 +82,7 @@ public class Main {
 
             storeService.addProductToStore(store1, list.get(1), 12);
             storeService.addProductToStore(store1, list.get(2), 33);
-            storeService.addProductToStore(store1, list.get(7), 2);
+            storeService.addProductToStore(store1, list.get(7), 11);
             storeService.addProductToStore(store1, list.get(8), 34);
 
             storeService.addProductToStore(store2, list.get(1), 12);
@@ -103,56 +105,63 @@ public class Main {
 
             storeService.assignCashierToCashDesk(store1, cashDesk1.getId(), cashier2.getId());
             storeService.assignCashierToCashDesk(store1, cashDesk2.getId(), cashier1.getId());
-            cashier1.setWorkTime(new WorkTime(LocalTime.of(8,0), LocalTime.of(16,0)));
-            cashier2.setWorkTime(new WorkTime(LocalTime.of(12,0), LocalTime.of(16,0)));
+            cashier1.setWorkTime(new WorkTime(LocalTime.of(8, 0), LocalTime.of(16, 0)));
+            cashier2.setWorkTime(new WorkTime(LocalTime.of(12, 0), LocalTime.of(16, 0)));
 
             System.out.println("\nКасиери в магазин 1: ");
             System.out.println(storeInterface.getStoreCashiers(store1));
-            
-            System.out.println("\nКасиери в магазин 1: ");
-            System.out.println(storeInterface.getStoreCashDesks(store1));
 
-            System.out.println(storeInterface.getCashierWorkingAtCashDesk(store1));
+            System.out.println("\nКаси в магазин 1: ");
+            System.out.println(storeInterface.getStoreCashDesks(store1));
 
             Map<Product, Integer> productQuantities = new HashMap<>();
             productQuantities.put(list.get(2), 2);
-            productQuantities.put(list.get(4), 3);
+            productQuantities.put(list.get(7), 3);
+
+            List<OrderProductView> rows = productQuantities.entrySet().stream()
+                    .map(e -> new OrderProductView(e.getKey(), e.getValue()))
+                    .toList();
+
             Receipt receipt = null;
-            try {
-                receipt = storeService.placeOrder(store1, cashDesk1, new ClientData(CardType.GOLD, BigDecimal.valueOf(50), productQuantities));
 
-            } catch (IOException e) {
-                System.out.println(e);
-            } catch (ClassNotFoundException e) {
-                System.out.println(e);
-            }
-
-
-
+            System.out.println("\n\n Продуктите в магазин 1 преди покупка");
             System.out.println(storeInterface.getProductQuantitiesInfo(store1, productCatalog));
-            System.out.println(receiptService.getReceiptTxt(store1, receipt));
-
-            System.out.println(cashier1.getSalary());
-            System.out.println(cashier2.getSalary());
-
-            System.out.println(storeService.getPayroll(store1));
-
-            System.out.println(storeService.getGoodsDeliveryExpense(store1));
-            System.out.println(store1.getTotalIncome());
-            System.out.println(storeService.getGoodsDeliveryIncome(store1));
-
-            System.out.println(storeService.getProfit(store1));
+            System.out.println("\n Продукти, които предстоят да бъдат закупени");
+            System.out.println(TableRenderer.renderAsAsciiTable(rows));
 
             try {
-                Receipt receipt22 = receiptService.getReceipt(store1, 1);
-                System.out.println(receiptService.getReceiptTxt(store1, receipt22));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                receipt = storeService.placeOrder(store1, cashDesk1, new ClientData(CardType.GOLD, BigDecimal.valueOf(1000), productQuantities));
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println(e.getMessage());
             }
 
+            if (receipt != null) {
 
+                System.out.println("\n\n Продуктите в магазин 1 след покупка");
+                System.out.println(storeInterface.getProductQuantitiesInfo(store1, productCatalog));
+
+//                System.out.println(cashier1.getSalary());
+//                System.out.println(cashier2.getSalary());
+//
+//                System.out.println(storeService.getPayroll(store1));
+//
+//                System.out.println(storeService.getGoodsDeliveryExpense(store1));
+//                System.out.println(store1.getTotalIncome());
+//                System.out.println(storeService.getGoodsDeliveryIncome(store1));
+//
+//                System.out.println(storeService.getProfit(store1));
+//
+//                try {
+//                    Receipt receipt22 = receiptService.getReceipt(store1, 1);
+//                    System.out.println(receiptService.getReceiptTxt(store1, receipt22));
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                } catch (ClassNotFoundException e) {
+//                    throw new RuntimeException(e);
+//                }
+            } else {
+                System.out.println("Няма достатъчно пари");
+            }
 
 
         }

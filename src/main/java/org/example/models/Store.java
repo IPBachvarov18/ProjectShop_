@@ -110,16 +110,18 @@ public class Store {
         }
     }
 
-    public void reduceProductQuantity(Product productId, int quantity) {
-        if (productQuantity.get(productId).getAvaibleQunatity() >= quantity) {
-            productQuantity.compute(productId, (k, v) -> {
-                v.setAvaibleQunatity(v.getAvaibleQunatity() - quantity);
-                v.setSoldQunatity(v.getSoldQunatity() + quantity);
-                return v;
-            });
-        } else {
-            throw new IllegalArgumentException("Not enough product quantity");
+    public void reduceProductQuantity(Product product, int quantity) {
+        Quantity q = productQuantity.get(product);
+        if (q == null) {
+            throw new IllegalArgumentException("Продуктът не е намерен: " + product.getName());
         }
+
+        if (q.getAvaibleQunatity() < quantity) {
+            throw new IllegalArgumentException("Няма наличност");
+        }
+
+        q.setAvaibleQunatity(q.getAvaibleQunatity() - quantity);
+        q.setSoldQunatity(q.getSoldQunatity() + quantity);
     }
 
 
