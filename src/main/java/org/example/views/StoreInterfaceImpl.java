@@ -5,6 +5,8 @@ import org.example.interfaces.StoreInterface;
 import org.example.models.*;
 import org.example.utils.table.TableRenderer;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,14 +89,56 @@ public class StoreInterfaceImpl implements StoreInterface {
     }
 
     @Override
-    public void displayStores(List<Store> stores) {
-
+    public String getSalaryExpensesBox(BigDecimal salaryExpenses) {
+        String content = "Разходи за заплати: BGN "
+                + salaryExpenses.setScale(2, RoundingMode.HALF_UP);
+        return displayBox(content);
     }
 
     @Override
-    public void displayStore(Store store) {
-
+    public String getDeliveryExpensesBox(BigDecimal deliveryExpenses) {
+        String content = "Разходи за доставка на продукти: BGN "
+                + deliveryExpenses.setScale(2, RoundingMode.HALF_UP);
+        return displayBox(content);
     }
 
+    @Override
+    public String getProductsIncomeBox(BigDecimal totalRevenue) {
+        String content = "Приходи от продадени стоки: BGN "
+                + totalRevenue.setScale(2, RoundingMode.HALF_UP);
+        return displayBox(content);
+    }
+
+    @Override
+    public String getProductsProfitBox(BigDecimal profit) {
+        String content = "Печалба от продадени стоки: BGN "
+                + profit.setScale(2, RoundingMode.HALF_UP);
+        return displayBox(content);
+    }
+
+    @Override
+    public String getStoreProfitBox(BigDecimal profit) {
+        String content = "Печалба на магазина: BGN "
+                + profit.setScale(2, RoundingMode.HALF_UP);
+        return displayBox(content);
+    }
+
+    @Override
+    public String getReceiptsCount(int count) {
+        String content = "Брой издадени касови бележки: " + count;
+        return displayBox(content);
+    }
+
+    private String displayBox(String content) {
+        int maxLen = content.length();
+        String border = "+" + "-".repeat(maxLen + 2) + "+";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(border).append("\n");
+        sb.append("| ").append(content).append(" |\n");
+        sb.append(border);
+
+        return sb.toString();
+    }
 
 }

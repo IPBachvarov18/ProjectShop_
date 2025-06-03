@@ -10,18 +10,28 @@ public class Receipt implements Serializable {
 
     private int id;
     private Cashier cashier;
+    private String storeName;
     private LocalDateTime time;
     private Map<Product,Integer> productsList = new HashMap<>();
     private BigDecimal total;
     private BigDecimal totalDiscount;
 
-    public Receipt(int id, Cashier cashier, LocalDateTime time, Map<Product,Integer> productsList, BigDecimal total, BigDecimal totalDiscount) {
+    public Receipt(int id, Cashier cashier, LocalDateTime time, Map<Product,Integer> productsList, BigDecimal total, BigDecimal totalDiscount, String storeName) {
         this.id = id;
         this.cashier = cashier;
         this.time = time;
         this.productsList = productsList;
         this.total = total;
         this.totalDiscount = totalDiscount;
+        this.storeName = storeName;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public int getId() {

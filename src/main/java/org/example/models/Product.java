@@ -11,7 +11,6 @@ import java.util.UUID;
 
 public class Product implements Serializable {
     private final UUID id;
-    @TableColumn(header = "Име на продукт", order = 1, width = 25)
     private String name;
     private BigDecimal deliveryPrice;
     private LocalDate expireDate;

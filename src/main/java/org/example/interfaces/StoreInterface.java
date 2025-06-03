@@ -2,6 +2,7 @@ package org.example.interfaces;
 
 import org.example.models.Store;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface StoreInterface {
@@ -13,8 +14,15 @@ public interface StoreInterface {
 
     String getCashierWorkingAtCashDesk(Store store);
 
-    void displayStores(List<Store> stores);
+    String getSalaryExpensesBox(BigDecimal salaryExpenses);
 
-    void displayStore(Store store);
+    String getDeliveryExpensesBox(BigDecimal deliveryExpenses);
 
+    String getProductsIncomeBox(BigDecimal deliveryExpenses);
+
+    String getProductsProfitBox(BigDecimal profit);
+
+    String getStoreProfitBox(BigDecimal profit);
+
+    String getReceiptsCount(int count);
 }

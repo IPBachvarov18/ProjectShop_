@@ -14,6 +14,7 @@ public class Store {
     private WorkTime workTime;
     private BigDecimal totalIncome;
     private BigDecimal totalProfit;
+    private Set<Integer> receiptIds;
 
     public Map<Product, Quantity> getProductQuantity() {
         return productQuantity;
@@ -25,6 +26,7 @@ public class Store {
         this.requirements = requirements;
         this.cashiers = new HashSet<Cashier>();
         this.cashDesks = new HashSet<CashDesk>();
+        this.receiptIds = new HashSet<Integer>();
         this.productQuantity = new HashMap<>();
     }
 
@@ -124,5 +126,11 @@ public class Store {
         q.setSoldQunatity(q.getSoldQunatity() + quantity);
     }
 
+    public void addReceipt(int receiptId) {
+        this.receiptIds.add(receiptId);
+    }
 
+    public Set<Integer> getReceiptIds() {
+        return receiptIds;
+    }
 }

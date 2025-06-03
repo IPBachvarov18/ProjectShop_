@@ -131,6 +131,7 @@ public class Main {
 
             try {
                 receipt = storeService.placeOrder(store1, cashDesk1, new ClientData(CardType.GOLD, BigDecimal.valueOf(1000), productQuantities));
+                receipt = storeService.placeOrder(store1, cashDesk1, new ClientData(CardType.GOLD, BigDecimal.valueOf(1000), productQuantities));
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println(e.getMessage());
             }
@@ -140,32 +141,25 @@ public class Main {
                 System.out.println("\n\n Продуктите в магазин 1 след покупка");
                 System.out.println(storeInterface.getProductQuantitiesInfo(store1, productCatalog));
 
-//                System.out.println(cashier1.getSalary());
-//                System.out.println(cashier2.getSalary());
-//
-//                System.out.println(storeService.getPayroll(store1));
-//
-//                System.out.println(storeService.getGoodsDeliveryExpense(store1));
-//                System.out.println(store1.getTotalIncome());
-//                System.out.println(storeService.getGoodsDeliveryIncome(store1));
-//
-//                System.out.println(storeService.getProfit(store1));
-//
-//                try {
-//                    Receipt receipt22 = receiptService.getReceipt(store1, 1);
-//                    System.out.println(receiptService.getReceiptTxt(store1, receipt22));
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                } catch (ClassNotFoundException e) {
-//                    throw new RuntimeException(e);
-//                }
+                System.out.println(receiptService.getReceiptTxt(store1, receipt));
+
+                System.out.println(storeInterface.getReceiptsCount(storeService.getReceiptsCount(store1)));
+                System.out.println(storeInterface.getSalaryExpensesBox(storeService.getPayroll(store1)));
+                System.out.println(storeInterface.getDeliveryExpensesBox(storeService.getGoodsDeliveryExpense(store1)));
+                System.out.println(storeInterface.getProductsIncomeBox(store1.getTotalIncome()));
+                System.out.println(storeInterface.getProductsProfitBox(storeService.getGoodsDeliveryIncome(store1)));
+                System.out.println(storeInterface.getStoreProfitBox(storeService.getProfit(store1)));
+
+                System.out.println("\n\n\n Зареждане на касова бележка от файл");
+                try {
+                    Receipt receipt22 = receiptService.getReceipt(store1, 1);
+                    System.out.println(receiptService.getReceiptTxt(store1, receipt22));
+                } catch (IOException | ClassNotFoundException e) {
+                    System.out.println(e.getMessage());
+                }
             } else {
                 System.out.println("Няма достатъчно пари");
             }
-
-
         }
-
-
     }
 }

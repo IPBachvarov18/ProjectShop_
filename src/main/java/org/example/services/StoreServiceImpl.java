@@ -96,7 +96,9 @@ public class StoreServiceImpl implements StoreService {
                     });
 
             store.setTotalIncome(clientData.getTotal());
-            return receiptService.generateReceipt(clientData, store, cashDesk);
+            Receipt receipt = receiptService.generateReceipt(clientData, store, cashDesk);
+            store.addReceipt(receipt.getId());
+            return receipt;
         }
         return null;
     }
@@ -168,28 +170,15 @@ public class StoreServiceImpl implements StoreService {
         return store.getTotalIncome().subtract(expenses);
     }
 
-//    public BigDecimal getGoodsDeliveryIncome(Store store) {
-//
-//        return store.getProductQuantity().entrySet().stream().
-//                map((e) -> {
-//                    UUID id = e.getKey();
-//                    Product pr = productCatalog.getAllProducts().stream().filter((p) -> p.getId() == id)
-//                            .findFirst()
-//                            .orElseThrow();
-//                    BigDecimal income = pr;
-//                    int qunatity = e.getValue();
-//
-//                    BigDecimal total = deliveryPrice.multiply(new BigDecimal(qunatity));
-//                    return total;
-//
-//                }).reduce(BigDecimal.ZERO, BigDecimal::add);
-//    }
-
     @Override
     public BigDecimal getProfit(Store store) {
         BigDecimal totalProfit=getGoodsDeliveryIncome(store);
 
         return totalProfit.subtract(this.getPayroll(store));
+    }
+
+    public int getReceiptsCount(Store store) {
+        return store.getReceiptIds().size();
     }
 
 
