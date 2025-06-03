@@ -1,4 +1,7 @@
-package org.example.data;
+package org.example.models;
+
+import org.example.enums.CardType;
+import org.example.enums.ProductCategory;
 
 import java.util.Map;
 

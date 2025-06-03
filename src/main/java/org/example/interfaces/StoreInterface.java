@@ -1,9 +1,11 @@
-package org.example.data;
+package org.example.interfaces;
+
+import org.example.models.Store;
 
 import java.util.List;
 
 public interface StoreInterface {
-    String getProductQuantitiesInfo(Store store,ProductCatalogService catalog);
+    String getProductQuantitiesInfo(Store store, ProductCatalogService catalog);
 
     String getStoreCashiers(Store store);
 

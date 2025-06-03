@@ -1,10 +1,10 @@
-package org.example.data;
+package org.example.models;
 
 import java.time.LocalTime;
 
 public class WorkTime {
-    LocalTime startTime;
-    LocalTime endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     public WorkTime(LocalTime startTime, LocalTime endTime) {
         this.startTime = startTime;
@@ -23,5 +23,10 @@ public class WorkTime {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    @Override
+    public String toString() {
+        return startTime + " - " + endTime;
     }
 }

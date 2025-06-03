@@ -1,9 +1,9 @@
-package org.example.data;
+package org.example.models;
+
+import org.example.enums.CardType;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class ClientData {
     private CardType card;

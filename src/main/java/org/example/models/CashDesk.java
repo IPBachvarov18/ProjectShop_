@@ -1,4 +1,4 @@
-package org.example.data;
+package org.example.models;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -29,7 +29,7 @@ public class CashDesk implements Serializable {
         return cashier;
     }
 
-    void assignCashierOnCashDesk(Cashier cashier) {
+    public void assignCashierOnCashDesk(Cashier cashier) {
         if (this.cashier!=null) {
             throw (new IllegalStateException("Cash desk already assigned"));
         }

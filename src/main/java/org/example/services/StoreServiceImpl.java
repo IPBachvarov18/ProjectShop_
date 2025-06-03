@@ -1,4 +1,9 @@
-package org.example.data;
+package org.example.services;
+
+import org.example.interfaces.ProductService;
+import org.example.interfaces.ReceiptService;
+import org.example.interfaces.StoreService;
+import org.example.models.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -112,10 +117,10 @@ public class StoreServiceImpl implements StoreService {
         }
     }
 
-    void assignCashierToCashDesk(CashDesk cashDesk, Store store, Cashier cashier) {
+    public void assignCashierToCashDesk(CashDesk cashDesk, Store store, Cashier cashier) {
 
         LocalTime timeNow = LocalTime.now();
-        if (timeNow.isBefore(cashier.getWorkTime().endTime) && timeNow.isAfter(cashier.getWorkTime().startTime)) {
+        if (timeNow.isBefore(cashier.getWorkTime().getEndTime()) && timeNow.isAfter(cashier.getWorkTime().getStartTime())) {
             cashDesk.assignCashierOnCashDesk(cashier);
             cashier.assignCashDeskOnCashier(cashDesk);
         } else {

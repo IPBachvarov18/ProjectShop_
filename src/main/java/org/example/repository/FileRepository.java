@@ -1,4 +1,4 @@
-package org.example.data;
+package org.example.repository;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -22,20 +22,20 @@ public class FileRepository<T extends Serializable>  {
         }
     }
 
-    void writeTxt(String text, String filename) throws IOException {
+    public void writeTxt(String text, String filename) throws IOException {
         Files.writeString(txtDir.resolve(filename), text);
     }
-    void writeBin(T object, String filename) throws IOException {
+    public void writeBin(T object, String filename) throws IOException {
         try(ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(binDir.resolve(filename)))) {
             oos.writeObject(object);
         }
     }
 
-    String readTxt(String filename) throws IOException {
+    public String readTxt(String filename) throws IOException {
         return Files.readString(txtDir.resolve(filename));
     }
 
-    T readBin(String filename) throws IOException, ClassNotFoundException {
+    public T readBin(String filename) throws IOException, ClassNotFoundException {
 
         try(ObjectInputStream oos = new ObjectInputStream(Files.newInputStream(binDir.resolve(filename)))) {
 

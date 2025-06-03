@@ -1,4 +1,4 @@
-package org.example.data;
+package org.example.models;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -110,7 +110,7 @@ public class Store {
         }
     }
 
-    void reduceProductQuantity(Product productId, int quantity) {
+    public void reduceProductQuantity(Product productId, int quantity) {
         if (productQuantity.get(productId).getAvaibleQunatity() >= quantity) {
             productQuantity.compute(productId, (k, v) -> {
                 v.setAvaibleQunatity(v.getAvaibleQunatity() - quantity);

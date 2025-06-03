@@ -1,8 +1,9 @@
-package org.example.data;
+package org.example.interfaces;
+
+import org.example.models.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.UUID;
 
 public interface StoreService {

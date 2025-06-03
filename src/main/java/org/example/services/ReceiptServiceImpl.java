@@ -1,8 +1,12 @@
-package org.example.data;
+package org.example.services;
+
+import org.example.interfaces.ProductService;
+import org.example.interfaces.ReceiptService;
+import org.example.models.*;
+import org.example.repository.FileRepository;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Map;

@@ -1,8 +1,10 @@
-package org.example.data;
+package org.example.views;
+
+import org.example.services.ProductCatalog;
+import org.example.models.Product;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class ProductCatalogInterface {
 

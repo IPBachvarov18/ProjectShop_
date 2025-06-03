@@ -1,6 +1,7 @@
-package org.example.data;
+package org.example.interfaces;
 
-import java.util.List;
+import org.example.models.Product;
+
 import java.util.Set;
 import java.util.UUID;
 

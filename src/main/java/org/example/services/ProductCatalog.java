@@ -1,4 +1,7 @@
-package org.example.data;
+package org.example.services;
+
+import org.example.interfaces.ProductCatalogService;
+import org.example.models.Product;
 
 import java.util.HashSet;
 import java.util.Set;

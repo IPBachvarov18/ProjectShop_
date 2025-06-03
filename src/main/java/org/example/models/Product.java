@@ -1,14 +1,12 @@
-package org.example.data;
+package org.example.models;
 
+import org.example.enums.ProductCategory;
 import org.example.utils.table.TableColumn;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.UUID;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 
 public class Product implements Serializable {

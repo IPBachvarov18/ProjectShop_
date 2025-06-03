@@ -1,9 +1,8 @@
-package org.example.data;
+package org.example.models;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class Cashier implements Serializable {
     private static final String fullNamePattern =
@@ -89,7 +88,7 @@ public class Cashier implements Serializable {
         return cashDesk;
     }
 
-    void assignCashDeskOnCashier(CashDesk cashDesk) {
+    public void assignCashDeskOnCashier(CashDesk cashDesk) {
         if (cashDesk.getCashier() != null) {
             throw (new IllegalStateException("cashier already assigned"));
         }

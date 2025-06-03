@@ -1,4 +1,9 @@
-package org.example.data;
+package org.example.services;
+
+import org.example.enums.ProductCategory;
+import org.example.interfaces.ProductService;
+import org.example.models.Product;
+import org.example.models.StoreRequirements;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,12 +13,12 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class ProductServiceImpl implements ProductService {
 
-    private BigDecimal getMarkupPrice(Map<ProductCategory, Integer> map,Product product) {
+    private BigDecimal getMarkupPrice(Map<ProductCategory, Integer> map, Product product) {
         return product.getDeliveryPrice().add(product.getDeliveryPrice().multiply(new BigDecimal(map.get(product.getCategory())).divide(BigDecimal.valueOf(100))));
 
     }
     @Override
-    public BigDecimal getTotalPrice(StoreRequirements requirements,Product product) {
+    public BigDecimal getTotalPrice(StoreRequirements requirements, Product product) {
         BigDecimal markupPrice=getMarkupPrice(requirements.getCategoryMarkup(),product);
         LocalDate myObj = LocalDate.now();
 
@@ -25,10 +30,7 @@ public class ProductServiceImpl implements ProductService {
 
     }
     public boolean isExpired(Product product) {
-        if(product.getExpireDate().isBefore(LocalDate.now())) {
-            return true;
-        }
-        return false;
+        return product.getExpireDate().isBefore(LocalDate.now());
     }
 
 }

@@ -1,12 +1,22 @@
 package org.example;
 
-import jdk.jfr.Category;
-import org.example.data.*;
+import org.example.enums.CardType;
+import org.example.enums.ProductCategory;
+import org.example.interfaces.*;
+import org.example.models.*;
+import org.example.services.ProductCatalog;
+import org.example.services.ProductServiceImpl;
+import org.example.services.ReceiptServiceImpl;
+import org.example.views.AllStoresView;
+import org.example.views.ProductCatalogInterface;
+import org.example.views.StoreInterfaceImpl;
+import org.example.services.StoreServiceImpl;
 import org.example.utils.table.TableRenderer;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Main {
@@ -26,9 +36,6 @@ public class Main {
         products.add(new Product("Фенер акумулаторен", BigDecimal.valueOf(45), LocalDate.of(2029, 12, 31), ProductCategory.NON_FOOD));
         products.add(new Product("Лепило универсално", BigDecimal.valueOf(7), LocalDate.of(2028, 8, 20), ProductCategory.NON_FOOD));
         List<Product> list = new ArrayList<>(products);
-
-        String asciiTable = TableRenderer.renderAsAsciiTable(list);
-        System.out.println(asciiTable);
 
         ProductCatalog productCatalog = new ProductCatalog(products);
         ProductCatalogInterface productCatalogInterface = new ProductCatalogInterface(productCatalog);
@@ -55,9 +62,18 @@ public class Main {
         }
 
         if (receiptService != null) {
-
             Store store1 = new Store("Lidl", new StoreRequirements(15, 10, categoryMarkup, cardDiscounts));
             Store store2 = new Store("Galenflaund", new StoreRequirements(10, 20, categoryMarkup, cardDiscounts));
+            store1.setWorkTime(new WorkTime(LocalTime.of(8,0), LocalTime.of(16,0)));
+            store2.setWorkTime(new WorkTime(LocalTime.of(18,0), LocalTime.of(3,0)));
+
+            System.out.println("Списък с всички магазини: ");
+            List<AllStoresView> allStoresView = List.of(
+                    new AllStoresView(store1),
+                    new AllStoresView(store2)
+            );
+            System.out.println(TableRenderer.renderAsAsciiTable(allStoresView));
+
 
             StoreService storeService = new StoreServiceImpl(productCatalog, prodService, receiptService);
             StoreInterface storeInterface = new StoreInterfaceImpl();
@@ -72,25 +88,28 @@ public class Main {
             storeService.addProductToStore(store2, list.get(6), 43);
             storeService.addProductToStore(store2, list.get(5), 19);
 
-
+            System.out.println("\nСписък с продуктите на магазин 1: ");
             System.out.println(storeInterface.getProductQuantitiesInfo(store2, productCatalog));
 
             CashDesk cashDesk1 = new CashDesk(1);
             CashDesk cashDesk2 = new CashDesk(2);
-            Cashier cashier1 = new Cashier("Gosho", "Gogev", "Petrov", BigDecimal.valueOf(500));
-            Cashier cashier2 = new Cashier("Preslava Gulgard Petreoba", BigDecimal.valueOf(1500));
+            Cashier cashier1 = new Cashier("Djena", "Stoeva", "Stoeva", BigDecimal.valueOf(500));
+            Cashier cashier2 = new Cashier("Preslava Koleva Ivanova", BigDecimal.valueOf(1500));
 
             storeService.hireCashier(store1, cashier1);
             storeService.hireCashier(store1, cashier2);
-
             storeService.makeCashDesk(store1, cashDesk1);
             storeService.makeCashDesk(store1, cashDesk2);
 
             storeService.assignCashierToCashDesk(store1, cashDesk1.getId(), cashier2.getId());
             storeService.assignCashierToCashDesk(store1, cashDesk2.getId(), cashier1.getId());
+            cashier1.setWorkTime(new WorkTime(LocalTime.of(8,0), LocalTime.of(16,0)));
+            cashier2.setWorkTime(new WorkTime(LocalTime.of(12,0), LocalTime.of(16,0)));
 
+            System.out.println("\nКасиери в магазин 1: ");
             System.out.println(storeInterface.getStoreCashiers(store1));
-
+            
+            System.out.println("\nКасиери в магазин 1: ");
             System.out.println(storeInterface.getStoreCashDesks(store1));
 
             System.out.println(storeInterface.getCashierWorkingAtCashDesk(store1));

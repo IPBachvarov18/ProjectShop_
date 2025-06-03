@@ -1,4 +1,4 @@
-package org.example.data;
+package org.example.models;
 
 public class Quantity {
     private int avaibleQunatity;

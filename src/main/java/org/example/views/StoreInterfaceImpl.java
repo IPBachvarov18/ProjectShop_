@@ -1,63 +1,43 @@
-package org.example.data;
+package org.example.views;
+
+import org.example.interfaces.ProductCatalogService;
+import org.example.interfaces.StoreInterface;
+import org.example.models.*;
+import org.example.utils.table.TableRenderer;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class StoreInterfaceImpl implements StoreInterface {
 
+
     public String getProductQuantitiesInfo(Store store, ProductCatalogService catalog) {
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Product Inventory:\n");
-        sb.append("------------------\n");
+        List<ProductQuantityView> rows = store.getProductQuantity()
+                .entrySet().stream()
+                .map(e -> new ProductQuantityView(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
 
-        for (Map.Entry<Product, Quantity> entry : store.getProductQuantity().entrySet()) {
-            Product product = entry.getKey();
-            Quantity qty = entry.getValue();
-
-            if (product != null) {
-                sb.append(String.format("Name: %-15s | Available: %3d | Sold: %3d%n",
-                        product.getName(), qty.getAvaibleQunatity(), qty.getSoldQunatity()));
-            } else {
-                sb.append("Unknown product with ID: ").append(product.getId()).append("\n");
-            }
-        }
-
-        return sb.toString();
+        return TableRenderer.renderAsAsciiTable(rows);
     }
+
 
     @Override
     public String getStoreCashiers(Store store) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Cashiers in store ").append(store.getName()).append(":\n");
-        sb.append("--------------------------------------\n");
-
         Set<Cashier> cashiers = store.getCashiers();
         if (cashiers == null || cashiers.isEmpty()) {
             sb.append("No cashiers assigned.\n");
             return sb.toString();
         }
 
-        for (Cashier cashier : cashiers) {
-            sb.append("Name: ").append(cashier.getFullName());
+        List<CashierView> rows = cashiers.stream()
+                .map(CashierView::new)
+                .collect(Collectors.toList());
 
-            CashDesk desk = cashier.getCashDesk();
-            if (desk != null) {
-                sb.append(", Cash Desk: ").append(desk.getNumber());
-            } else {
-                sb.append(", Not assigned to a cash desk");
-            }
-
-            WorkTime wt = cashier.getWorkTime();
-            if (wt != null) {
-                sb.append(", Work Time: ").append(wt.toString());
-            }
-
-            sb.append("\n");
-        }
-
+        sb.append(TableRenderer.renderAsAsciiTable(rows));
         return sb.toString();
     }
 
@@ -65,26 +45,17 @@ public class StoreInterfaceImpl implements StoreInterface {
     @Override
     public String getStoreCashDesks(Store store) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Cash Desks in store ").append(store.getName()).append(":\n");
-        sb.append("--------------------------------------\n");
-
         Set<CashDesk> cashDesks = store.getCashDesks();
         if (cashDesks == null || cashDesks.isEmpty()) {
             sb.append("No cash desks available.\n");
             return sb.toString();
         }
 
-        for (CashDesk desk : cashDesks) {
-            sb.append("Cash Desk Number: ").append(desk.getNumber());
-            Cashier cashier = desk.getCashier();
-            if (cashier != null) {
-                sb.append(", Cashier: ").append(cashier.getFullName());
-            } else {
-                sb.append(", No cashier assigned");
-            }
-            sb.append("\n");
-        }
+        List<CashDeskView> rows = cashDesks.stream()
+                .map(CashDeskView::new)
+                .collect(Collectors.toList());
 
+        sb.append(TableRenderer.renderAsAsciiTable(rows));
         return sb.toString();
     }
 
