@@ -35,41 +35,62 @@ public class Main {
         Map requ = new HashMap<ProductCategory, Integer>();
         requ.put(ProductCategory.FOOD, 1);
         requ.put(ProductCategory.NON_FOOD, 5);
-        Store store1 = new Store("Lidl", new StoreRequirements(15, 5, requ,cardDiscounts));
-        StoreService storeService = new StoreServiceImpl(catalog1, prodService);
-        StoreInterface storeInterface=new StoreInterfaceImpl();
-        List<Product> list = new ArrayList<>(products);
-        storeService.addProductToStore(store1, list.get(2), 5);
-        storeService.addProductToStore(store1, list.get(4), 5);
+        ReceiptService receiptService = null;
+
+        try {
+            receiptService = new ReceiptServiceImpl(prodService);
+        } catch (Exception e) {
+            System.out.printf("ReceiptService: %s\n", e.getMessage());
+        }
+
+        if (receiptService != null) {
+            Store store1 = new Store("Lidl", new StoreRequirements(15, 5, requ, cardDiscounts));
+            StoreService storeService = new StoreServiceImpl(catalog1, prodService, receiptService);
+            StoreInterface storeInterface = new StoreInterfaceImpl();
+            List<Product> list = new ArrayList<>(products);
+            storeService.addProductToStore(store1, list.get(2), 5);
+            storeService.addProductToStore(store1, list.get(4), 5);
 
 
-        System.out.println(storeInterface.getProductQuantitiesInfo(store1,catalog1));
+            System.out.println(storeInterface.getProductQuantitiesInfo(store1, catalog1));
 
-        CashDesk cashDesk1=new CashDesk(1);
-        CashDesk cashDesk2=new CashDesk(2);
-        Cashier cashier1=new Cashier("Gosho",BigDecimal.valueOf(500));
-        Cashier cashier2=new Cashier("BaiIvan",BigDecimal.valueOf(1500));
+            CashDesk cashDesk1 = new CashDesk(1);
+            CashDesk cashDesk2 = new CashDesk(2);
+            Cashier cashier1 = new Cashier("Gosho", BigDecimal.valueOf(500));
+            Cashier cashier2 = new Cashier("BaiIvan", BigDecimal.valueOf(1500));
 
-        storeService.hireCashier(store1, cashier1);
-        storeService.hireCashier(store1, cashier2);
+            storeService.hireCashier(store1, cashier1);
+            storeService.hireCashier(store1, cashier2);
 
-        storeService.makeCashDesk(store1, cashDesk1);
-        storeService.makeCashDesk(store1, cashDesk2);
+            storeService.makeCashDesk(store1, cashDesk1);
+            storeService.makeCashDesk(store1, cashDesk2);
 
-        storeService.assignCashierToCashDesk(store1,cashDesk1.getId(),cashier2.getId());
-        storeService.assignCashierToCashDesk(store1,cashDesk2.getId(),cashier1.getId());
+            storeService.assignCashierToCashDesk(store1, cashDesk1.getId(), cashier2.getId());
+            storeService.assignCashierToCashDesk(store1, cashDesk2.getId(), cashier1.getId());
 
-        System.out.println(storeInterface.getStoreCashiers(store1));
+            System.out.println(storeInterface.getStoreCashiers(store1));
 
-        System.out.println(storeInterface.getStoreCashDesks(store1));
+            System.out.println(storeInterface.getStoreCashDesks(store1));
 
-        System.out.println(storeInterface.getCashierWorkingAtCashDesk(store1));
+            System.out.println(storeInterface.getCashierWorkingAtCashDesk(store1));
 
-        Map<UUID, Integer> productQuantities = new HashMap<>();
-        productQuantities.put(list.get(2).getId(), 2);
-        storeService.placeOrder(store1,cashDesk1,new ClientData(CardType.GOLD,BigDecimal.valueOf(50), productQuantities));
+            Map<Product, Integer> productQuantities = new HashMap<>();
+            productQuantities.put(list.get(2), 2);
+            Receipt receipt = null;
+            try {
+                receipt = storeService.placeOrder(store1, cashDesk1, new ClientData(CardType.GOLD, BigDecimal.valueOf(50), productQuantities));
 
-        System.out.println(storeInterface.getProductQuantitiesInfo(store1,catalog1));
+            } catch (IOException e) {
+                System.out.println(e);
+            } catch (ClassNotFoundException e) {
+                System.out.println(e);
+            }
+
+
+
+            System.out.println(storeInterface.getProductQuantitiesInfo(store1, catalog1));
+            System.out.println(receiptService.getReceiptTxt(store1, receipt));
+        }
 
 
     }

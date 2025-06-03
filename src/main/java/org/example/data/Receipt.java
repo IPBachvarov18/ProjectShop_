@@ -3,8 +3,7 @@ package org.example.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Receipt implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -12,18 +11,15 @@ public class Receipt implements Serializable {
     private int id;
     private Cashier cashier;
     private LocalDateTime time;
-    private Set<Product> productsList = new HashSet<>();
+    private Map<Product,Integer> productsList = new HashMap<>();
     private BigDecimal total;
 
-    public Receipt(int id, Cashier cashier, LocalDateTime time, Set<Product> productsList, BigDecimal total) {
+    public Receipt(int id, Cashier cashier, LocalDateTime time, Map<Product,Integer> productsList, BigDecimal total) {
         this.id = id;
         this.cashier = cashier;
         this.time = time;
         this.productsList = productsList;
         this.total = total;
-    }
-
-    public Receipt() {
     }
 
     public int getId() {
@@ -50,11 +46,11 @@ public class Receipt implements Serializable {
         this.time = time;
     }
 
-    public Set<Product> getProductsList() {
+    public Map<Product,Integer> getProductsList() {
         return productsList;
     }
 
-    public void setProductsList(Set<Product> productsList) {
+    public void setProductsList(Map<Product,Integer> productsList) {
         this.productsList = productsList;
     }
 
@@ -68,6 +64,6 @@ public class Receipt implements Serializable {
 
     @Override
     public String toString() {
-        return "Azis";
+        return "a";
     }
 }

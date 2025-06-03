@@ -10,12 +10,12 @@ public class Store {
     private Set<Cashier> cashiers;
     private Set<CashDesk> cashDesks;
     private StoreRequirements requirements;
-    private Map<UUID, Quantity> productQuantity;
+    private Map<Product, Quantity> productQuantity;
     private WorkTime workTime;
     private BigDecimal totalIncome;
     private BigDecimal totalProfit;
 
-    public Map<UUID, Quantity> getProductQuantity() {
+    public Map<Product, Quantity> getProductQuantity() {
         return productQuantity;
     }
 
@@ -36,7 +36,7 @@ public class Store {
         this.workTime = workTime;
     }
 
-    public void setProductQuantity(Map<UUID, Quantity> productQuantity) {
+    public void setProductQuantity(Map<Product, Quantity> productQuantity) {
         this.productQuantity = productQuantity;
     }
 
@@ -100,17 +100,17 @@ public class Store {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than 0");
         }
-        if (!productQuantity.containsKey(product.getId())) {
-            productQuantity.put(product.getId(), new Quantity(quantity, 0));
+        if (!productQuantity.containsKey(product)) {
+            productQuantity.put(product, new Quantity(quantity, 0));
         } else {
-            productQuantity.compute(product.getId(), (k, v) -> {
+            productQuantity.compute(product, (k, v) -> {
                 v.setAvaibleQunatity(v.getAvaibleQunatity() + quantity);
                 return v;
             });
         }
     }
 
-    void reduceProductQuantity(UUID productId, int quantity) {
+    void reduceProductQuantity(Product productId, int quantity) {
         if (productQuantity.get(productId).getAvaibleQunatity() >= quantity) {
             productQuantity.compute(productId, (k, v) -> {
                 v.setAvaibleQunatity(v.getAvaibleQunatity() - quantity);

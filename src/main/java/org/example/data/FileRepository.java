@@ -22,8 +22,8 @@ public class FileRepository<T extends Serializable>  {
         }
     }
 
-    void writeTxt(T object, String filename) throws IOException {
-        Files.writeString(txtDir.resolve(filename),object.toString());
+    void writeTxt(String text, String filename) throws IOException {
+        Files.writeString(txtDir.resolve(filename), text);
     }
     void writeBin(T object, String filename) throws IOException {
         try(ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(binDir.resolve(filename)))) {

@@ -12,16 +12,15 @@ public class StoreInterfaceImpl implements StoreInterface {
         sb.append("Product Inventory:\n");
         sb.append("------------------\n");
 
-        for (Map.Entry<UUID, Quantity> entry : store.getProductQuantity().entrySet()) {
-            UUID productId = entry.getKey();
+        for (Map.Entry<Product, Quantity> entry : store.getProductQuantity().entrySet()) {
+            Product product = entry.getKey();
             Quantity qty = entry.getValue();
 
-            Product product = catalog.getProductById(productId);
             if (product != null) {
                 sb.append(String.format("Name: %-15s | Available: %3d | Sold: %3d%n",
                         product.getName(), qty.getAvaibleQunatity(), qty.getSoldQunatity()));
             } else {
-                sb.append("Unknown product with ID: ").append(productId).append("\n");
+                sb.append("Unknown product with ID: ").append(product.getId()).append("\n");
             }
         }
 

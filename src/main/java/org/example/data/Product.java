@@ -1,5 +1,6 @@
 package org.example.data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.UUID;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 
-public class Product   {
+public class Product implements Serializable {
     private final UUID id;
     private String name;
     private BigDecimal deliveryPrice;

@@ -1,16 +1,19 @@
 package org.example.data;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.UUID;
 
 public class StoreServiceImpl implements StoreService {
+    ReceiptService receiptService;
     ProductCatalog productCatalog;
     ProductService productService;
 
-    public StoreServiceImpl(ProductCatalog productCatalog, ProductService productService) {
+    public StoreServiceImpl(ProductCatalog productCatalog, ProductService productService, ReceiptService receiptService) {
         this.productCatalog = productCatalog;
         this.productService = productService;
+        this.receiptService = receiptService;
 
     }
 
@@ -26,8 +29,7 @@ public class StoreServiceImpl implements StoreService {
     public void hireCashier(Store store, Cashier cashier) {
         if (!store.getCashiers().contains(cashier)) {
             store.addCashier(cashier);
-        }
-        else {
+        } else {
             throw (new RuntimeException("Cashier already hired"));
         }
     }
@@ -36,8 +38,7 @@ public class StoreServiceImpl implements StoreService {
     public void makeCashDesk(Store store, CashDesk cashDesk) {
         if (!store.getCashDesks().contains(cashDesk)) {
             store.addCashDesk(cashDesk);
-        }
-        else {
+        } else {
             throw (new RuntimeException("CashDesk already made"));
         }
     }
@@ -63,14 +64,11 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public void placeOrder(Store store,CashDesk cashDesk, ClientData clientData) {
+    public Receipt placeOrder(Store store, CashDesk cashDesk, ClientData clientData) throws IOException, ClassNotFoundException {
 
         BigDecimal sum = clientData.getProductList().entrySet().stream().
                 map((e) -> {
-                    UUID id = e.getKey();
-                    Product pr = productCatalog.getAllProducts().stream().filter((p) -> p.getId() == id)
-                            .findFirst()
-                            .orElseThrow();
+                    Product pr = e.getKey();
                     BigDecimal sum1 = productService.getTotalPrice(store.getRequirements(), pr);
                     int qunatity = e.getValue();
 
@@ -78,19 +76,22 @@ public class StoreServiceImpl implements StoreService {
                     return total;
 
                 }).reduce(BigDecimal.ZERO, BigDecimal::add);
-        sum = sum.multiply(BigDecimal.valueOf(store.getRequirements().getCardTypeDiscount()
-                .get(clientData.getCard())).divide(BigDecimal.valueOf(100)));
 
-        if (sum.compareTo(clientData.getAvaiableCash()) != 1) {
+        clientData.setTotal(sum.multiply(BigDecimal.valueOf(store.getRequirements().getCardTypeDiscount()
+                .get(clientData.getCard())).divide(BigDecimal.valueOf(100))));
+
+        if (clientData.getTotal().compareTo(clientData.getAvaiableCash()) != 1) {
             clientData.getProductList().entrySet().stream()
                     .forEach(entry -> {
-                        UUID key = entry.getKey();
+                        Product key = entry.getKey();
                         Integer value = entry.getValue();
                         store.reduceProductQuantity(key, value);
                     });
 
             store.setTotalIncome(sum);
+            return receiptService.generateReceipt(clientData, store, cashDesk);
         }
+        return null;
     }
 
     void hireCashier(Cashier cashier, Store store) {
@@ -135,10 +136,7 @@ public class StoreServiceImpl implements StoreService {
     public BigDecimal getGoodsDeliveryExpense(Store store) {
         return store.getProductQuantity().entrySet().stream().
                 map((e) -> {
-                    UUID id = e.getKey();
-                    Product pr = productCatalog.getAllProducts().stream().filter((p) -> p.getId() == id)
-                            .findFirst()
-                            .orElseThrow();
+                    Product pr = e.getKey();
                     BigDecimal deliveryPrice = pr.getDeliveryPrice();
                     int qunatity = e.getValue().getAvaibleQunatity() + e.getValue().getSoldQunatity();
 

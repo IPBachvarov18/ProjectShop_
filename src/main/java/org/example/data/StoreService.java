@@ -1,5 +1,6 @@
 package org.example.data;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public interface StoreService {
 
     void assignCashierToCashDesk(Store store, UUID cashDeskId, UUID cashierId);
 
-    void placeOrder(Store store, CashDesk cashDesk, ClientData clientData);
+    Receipt placeOrder(Store store, CashDesk cashDesk, ClientData clientData) throws IOException, ClassNotFoundException;
 
     BigDecimal getPayroll(Store store);
 

@@ -1,8 +1,9 @@
 package org.example.data;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class CashDesk {
+public class CashDesk implements Serializable {
     final private UUID id;
     private int number;
     private Cashier cashier;
